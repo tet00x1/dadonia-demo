@@ -1,0 +1,373 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ COMPANY_NAME_AR }} - الرئيسية{% endblock %}
+
+{% block content %}
+<!-- Editorial Maritime Trade Hero Section -->
+<section class="hero-section">
+  <div class="container hero-grid">
+    <div>
+      <span class="hero-lead-label">التجارة الدولية وسلاسل الإمداد اللوجستية</span>
+      <h1 class="hero-title">جسر الصادرات المصرية نحو موانئ وأسواق العالم</h1>
+      <p class="hero-desc">
+        نربط الإنتاج الزراعي والصناعي المصري بأكثر من 28 ميناء بحري دولي. حلول متكاملة للتخليص الجمركي، الفحص الرقابي، والنقل المبرد (Reefer Containers) وفق أحدث المعايير القياسية.
+      </p>
+      <div class="hero-buttons">
+        <a href="{% url 'products' %}" class="btn btn-primary">استعراض دليل الصادرات المعتمدة</a>
+        <a href="{% url 'track' %}" class="btn btn-outline" style="border-color: #ffffff; color: #ffffff;">تتبع بوليصة شحن</a>
+      </div>
+    </div>
+
+    <!-- Editorial Logistics Metric Box -->
+    <div class="hero-card">
+      <h3 class="hero-card-title">مؤشرات الأداء التشغيلي للمنظومة</h3>
+      <div class="hero-stats-grid">
+        <div class="stat-item">
+          <div class="stat-number">{{ stats.products }}+</div>
+          <div class="stat-label">أصناف تجارية جاهزة للتوريد</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">{{ stats.shipments }}</div>
+          <div class="stat-label">إجمالي العمليات الموثقة</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">{{ stats.delivered }}</div>
+          <div class="stat-label">شحنات اكتمل تسليمها</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">{{ stats.ports }}</div>
+          <div class="stat-label">موانئ ومحطات جمركية معتمدة</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Live Operational Shipments Monitor -->
+<section class="py-section bg-white">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">حركة العمليات والشحنات البحرية النشطة</h2>
+        <p class="section-subtitle">بيانات حية ومحدثة من سجل الحاويات بموانئ الإسكندرية ودمياط وبورسعيد والسخنة</p>
+      </div>
+      <a href="{% url 'track' %}" class="btn btn-outline btn-sm">بحث في أرشيف الشحنات ←</a>
+    </div>
+
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>رقم البوليصة / الشحنة</th>
+            <th>نوع العملية</th>
+            <th>الصنف التجاري</th>
+            <th>الوجهة / دولة الميناء</th>
+            <th>الكمية وحجم الحاوية</th>
+            <th>الحالة اللوجستية</th>
+            <th>تاريخ القيد</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for shipment in recent_shipments %}
+            <tr>
+              <td>
+                <a href="{% url 'track' %}?ref={{ shipment.reference }}" class="ref-code" title="عرض تفاصيل التتبع">
+                  {{ shipment.reference }}
+                </a>
+              </td>
+              <td>
+                {% if shipment.kind == 'export' %}
+                  <span class="badge badge-export">تصدير خارجي</span>
+                {% else %}
+                  <span class="badge badge-import">استيراد وارد</span>
+                {% endif %}
+              </td>
+              <td><strong>{{ shipment.product.name }}</strong></td>
+              <td>{{ shipment.country }}</td>
+              <td style="font-family: var(--font-mono); font-size: 0.85rem;">{{ shipment.quantity }}</td>
+              <td>
+                <span class="status-indicator status-{{ shipment.status }}">
+                  <span class="status-dot"></span>
+                  {{ shipment.get_status_display }}
+                </span>
+              </td>
+              <td style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-muted);">
+                {{ shipment.created_at|date:"Y-m-d" }}
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                لا توجد شحنات مسجلة حالياً.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- Interactive Reefer Container & Payload Calculator Section -->
+<section class="py-section bg-sand" style="border-top: 1px solid var(--border-light); border-bottom: 1px solid var(--border-light);">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">حاسبة الحمولات والحاويات المبردة وسلاسل الإمداد</h2>
+        <p class="section-subtitle">أداة تفاعلية للمستوردين لحساب سعة الحاويات (Payload)، درجات التبريد، وأزمنة الإبحار الدولية</p>
+      </div>
+      <a href="{% url 'calendar' %}" class="btn btn-outline btn-sm">استعراض التقويم التصديري والزراعي ←</a>
+    </div>
+
+    <div class="calculator-card">
+      <div class="calc-grid">
+        <!-- Controls Column -->
+        <div>
+          <h3 style="font-size: 1.25rem; margin-bottom: 1.25rem; color: var(--navy-800); border-bottom: 1px solid var(--border-light); padding-bottom: 0.5rem;">
+            محددات الشحنة والوجهة البحرية
+          </h3>
+
+          <div class="form-group">
+            <label class="form-label" for="calc-crop">الصنف التصديري المطلوب:</label>
+            <select id="calc-crop" class="form-select">
+              <option value="citrus" selected>برتقال صيفي فالنسيا (Valencia Oranges)</option>
+              <option value="dates">تمور مجدول فاخرة (Medjool Dates)</option>
+              <option value="onions">بصل أحمر وذهبي جاف (Dry Onions)</option>
+              <option value="strawberries">فراولة مجمدة سريعة التجميد (IQF Strawberries)</option>
+              <option value="cotton">قطن مصري طويل التيلة (Giza 94 Cotton)</option>
+              <option value="minerals">كربونات الكالسيوم والمعادن (Industrial Minerals)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="calc-container">نوع ومواصفة الحاوية:</label>
+            <select id="calc-container" class="form-select">
+              <option value="40_reefer" selected>حاوية 40 قدم عالية السقف مبردة (40ft High Cube Reefer)</option>
+              <option value="20_reefer">حاوية 20 قدم مبردة قياسية (20ft Standard Reefer)</option>
+              <option value="40_dry">حاوية 40 قدم جافة قياسية (40ft Dry Standard / High Cube)</option>
+              <option value="20_dry">حاوية 20 قدم جافة حمولة ثقيلة (20ft Heavy Payload Dry)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="calc-port">ميناء الوصول الدولي المستهدف:</label>
+            <select id="calc-port" class="form-select">
+              <option value="rotterdam" selected>ميناء روتردام (Rotterdam - هولندا)</option>
+              <option value="hamburg">ميناء هامبورغ (Hamburg - ألمانيا)</option>
+              <option value="felixstowe">ميناء فيلكستو (Felixstowe - المملكة المتحدة)</option>
+              <option value="novorossiysk">ميناء نوفوروسيسك (Novorossiysk - روسيا)</option>
+              <option value="jeddah">ميناء جدة الإسلامي (Jeddah - السعودية)</option>
+              <option value="jebel_ali">ميناء جبل علي (Jebel Ali - الإمارات)</option>
+              <option value="singapore">ميناء سنغافورة (Singapore - سنغافورة)</option>
+            </select>
+          </div>
+
+          <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; margin-top: 1rem;">
+            * الحسابات تستند إلى الأوزان القياسية للطبليات المعقمة (ISPM 15) وحدود الحمولة القانونية للبواخر والخطوط الملاحية.
+          </div>
+        </div>
+
+        <!-- Dynamic Results Column -->
+        <div class="calc-results-box">
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-dark); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+              <span style="font-size: 0.85rem; color: var(--accent); font-weight: 700; text-transform: uppercase;">
+                مخرجات الحاوية الحية (Live Reefer Specifications)
+              </span>
+              <span style="font-size: 0.75rem; color: var(--sand-300); font-family: var(--font-mono);">
+                DADONIA LOGISTICS
+              </span>
+            </div>
+
+            <div class="calc-result-metric">
+              <div class="calc-metric-lbl">الحمولة الصافية المقدرة للحاوية (Net Payload)</div>
+              <div id="calc-res-payload" class="calc-metric-val">24.0 طن متري</div>
+              <div class="calc-metric-sub">حمولة قياسية معتمدة لخطوط الشحن</div>
+            </div>
+
+            <div class="calc-result-metric">
+              <div class="calc-metric-lbl">إجمالي العبوات / الطرود التصديرية</div>
+              <div id="calc-res-count" class="calc-metric-val">1,600 كرتونة</div>
+              <div class="calc-metric-sub">مرتبة على 20 بالتة قياسية (80 كرتونة / بالتة)</div>
+            </div>
+
+            <div class="calc-result-metric">
+              <div class="calc-metric-lbl">درجة حرارة النقل المبرد والتهوية الموصى بها</div>
+              <div id="calc-res-temp" class="calc-metric-val" style="color: #64b5f6;">+3°C إلى +5°C</div>
+              <div id="calc-res-notes" class="calc-metric-sub">معايرة أحجام 48-100 مم، عبوات تلسكوبية مهواة.</div>
+            </div>
+
+            <div class="calc-result-metric">
+              <div class="calc-metric-lbl">زمن الإبحار التقديري المباشر (Direct Transit Time)</div>
+              <div id="calc-res-transit" class="calc-metric-val" style="color: #81c784;">7 - 9 أيام</div>
+              <div class="calc-metric-sub">من ميناء الإسكندرية / دمياط البحري</div>
+            </div>
+          </div>
+
+          <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-dark);">
+            <a id="calc-cta-btn" href="{% url 'contact' %}" class="btn btn-primary" style="width: 100%; text-align: center; padding: 0.75rem;">
+              نقل هذه الحسابات إلى طلب عرض السعر الرسمي ←
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Products Section -->
+<section class="py-section bg-white">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">أبرز المحاصيل والمنتجات المعدة للتصدير</h2>
+        <p class="section-subtitle">مطابقة للاشتراطات الحجرية ومعايير الجودة الدولية (ISO / GlobalGAP / BRCGS)</p>
+      </div>
+      <a href="{% url 'products' %}" class="btn btn-secondary btn-sm">عرض الدليل الكامل ({{ stats.products }}) ←</a>
+    </div>
+
+    <div class="products-grid">
+      {% for product in featured_products %}
+        <article class="product-card">
+          <div class="product-image-container">
+            {% if product.image %}
+              <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            {% else %}
+              <div class="product-image-placeholder">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                  <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                  <line x1="12" y1="22.08" x2="12" y2="12"/>
+                </svg>
+                <span>[صورة الصنف والعبوة التصديرية]</span>
+              </div>
+            {% endif %}
+            <span class="product-badge">{{ product.get_category_display }}</span>
+          </div>
+
+          <div class="product-body">
+            <span class="product-category">{{ product.origin }}</span>
+            <h3 class="product-title">{{ product.name }}</h3>
+
+            <!-- Technical Specification Badges -->
+            <div class="spec-badges-row">
+              {% if product.hs_code %}
+                <span class="spec-badge spec-badge-hs" title="الرمز الجمركي المنسق">HS {{ product.hs_code }}</span>
+              {% endif %}
+              {% if product.temperature_range %}
+                <span class="spec-badge spec-badge-temp" title="درجة حرارة النقل المبرد">{{ product.temperature_range }}</span>
+              {% endif %}
+              {% if product.harvest_season %}
+                <span class="spec-badge spec-badge-season" title="موسم التصدير الميداني">{{ product.harvest_season }}</span>
+              {% endif %}
+            </div>
+
+            <p class="product-desc">{{ product.description|truncatewords:24 }}</p>
+
+            <!-- Technical Spec Drawer Button -->
+            <button type="button" class="tech-details-toggle" aria-expanded="false">
+              المواصفات الفنية المعتمدة (HS / درجة الحفظ / المعايرة) ↓
+            </button>
+            <div class="tech-drawer">
+              <dl>
+                {% if product.hs_code %}
+                  <dt>الرمز الجمركي (HS):</dt>
+                  <dd style="font-family: var(--font-mono);">{{ product.hs_code }}</dd>
+                {% endif %}
+                {% if product.caliber_specs %}
+                  <dt>الأحجام والمعايرة:</dt>
+                  <dd>{{ product.caliber_specs }}</dd>
+                {% endif %}
+                {% if product.packaging_type %}
+                  <dt>نوع التعبئة والتغليف:</dt>
+                  <dd>{{ product.packaging_type }}</dd>
+                {% endif %}
+                {% if product.temperature_range %}
+                  <dt>حرارة النقل والتبريد:</dt>
+                  <dd>{{ product.temperature_range }}</dd>
+                {% endif %}
+                {% if product.harvest_season %}
+                  <dt>موسم الحصاد والتصدير:</dt>
+                  <dd>{{ product.harvest_season }}</dd>
+                {% endif %}
+              </dl>
+            </div>
+            
+            <div class="product-meta" style="margin-top: 1rem;">
+              <span class="product-origin">شروط التسليم: FOB / CIF</span>
+              <a href="{% url 'contact' %}?product={{ product.id }}" class="btn btn-outline btn-sm">طلب عرض أسعار</a>
+            </div>
+          </div>
+        </article>
+      {% empty %}
+        <div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
+          لا توجد منتجات منشورة حالياً.
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Strategic Logistics Infrastructure & Real Photo Slots -->
+<section class="py-section bg-white">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">البنية اللوجستية والمحطات البحرية المعتمدة</h2>
+        <p class="section-subtitle">تواجد ميداني دائم بمحطات الشحن الجمركي والمستودعات المبردة</p>
+      </div>
+      <a href="{% url 'about' %}" class="btn btn-outline btn-sm">عن منظومتنا اللوجستية ←</a>
+    </div>
+
+    <div class="editorial-grid">
+      <!-- Port Hub Facility Card -->
+      <div class="editorial-card">
+        <div style="height: 220px; margin-bottom: 1.25rem; border: 1px solid var(--border-light); overflow: hidden;">
+          <img src="{% static 'img/port-hub.svg' %}" alt="رصيف الحاويات بميناء الإسكندرية اللوجستي">
+        </div>
+        <h3>محطات الرقابة والشحن بميناء الإسكندرية ودمياط</h3>
+        <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.7;">
+          إدارة مباشرة لعمليات التبخير والتطهير، الكشف بالأشعة، والفحص الإشعاعي والبيطري تحت إشراف هيئة سلامة الغذاء المصرية. سرعة في إنهاء إجراءات بوالص الشحن ونظام نافذة ACI.
+        </p>
+        <ul class="feature-list">
+          <li><span class="bullet-line">—</span> تواجد فريق المعاينة على مدار 24 ساعة بساحات الحاويات.</li>
+          <li><span class="bullet-line">—</span> ربط إلكتروني كامل مع خطوط الملاحة البحرية الدولية (Maersk, CMA CGM, MSC, Hapag-Lloyd).</li>
+          <li><span class="bullet-line">—</span> شهادات المنشأ (EUR.1, COMESA, Arab League GAFTA) معتمدة فورياً.</li>
+        </ul>
+      </div>
+
+      <!-- Cold Storage Facility Card -->
+      <div class="editorial-card">
+        <div style="height: 220px; margin-bottom: 1.25rem; border: 1px solid var(--border-light); overflow: hidden;">
+          <img src="{% static 'img/cold-warehouse.svg' %}" alt="مجمع التبريد والتخزين المبرد وسلاسل الإمداد">
+        </div>
+        <h3>سلاسل التبريد والتخزين المفرغ (Cold-Chain)</h3>
+        <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.7;">
+          مستودعات مبردة بسعة تخزينية تتجاوز 12,000 طن، مجهزة بأنظمة مراقبة درجات الحرارة والرطوبة الرقمية مع حساسات دقيقة تضمن سلامة الفواكه والخضروات والمواد الحساسة.
+        </p>
+        <ul class="feature-list">
+          <li><span class="bullet-line">—</span> نطاقات تبريد متحكم بها من -25° مئوية وحتى +14° مئوية.</li>
+          <li><span class="bullet-line">—</span> خطوط فرز وتدريج آلية بمقاييس الألوان والأحجام والوزن.</li>
+          <li><span class="bullet-line">—</span> محطة شحن كهربائي لحاويات الريفر (Reefer Plugs) قبل التسكين بالبواخر.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Call to Action Banner -->
+<section style="background-color: var(--navy-800); color: #ffffff; padding: 3rem 0; border-top: 1px solid var(--border-dark);">
+  <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+    <div>
+      <h3 style="color: #ffffff; font-size: 1.5rem; margin-bottom: 0.35rem;">هل تبحث عن مورد معتمد أو شريك لوجستي في مصر؟</h3>
+      <p style="color: var(--sand-200); margin-bottom: 0; font-size: 0.95rem;">
+        فريق المبيعات والعمليات جاهز لتزويدكم بالمواصفات الفنية، جداول الإبحار، وعروض الأسعار التنافسية.
+      </p>
+    </div>
+    <div>
+      <a href="{% url 'contact' %}" class="btn btn-primary" style="padding: 0.75rem 1.75rem;">تقديم طلب توريد رسمي ←</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

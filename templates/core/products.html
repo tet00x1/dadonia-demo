@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}دليل المنتجات وحاصلات التصدير - {{ COMPANY_NAME_AR }}{% endblock %}
+
+{% block content %}
+<section class="py-section bg-sand" style="border-bottom: 1px solid var(--border-light); padding: 2.5rem 0;">
+  <div class="container">
+    <span style="font-size: 0.85rem; font-weight: 700; color: var(--accent); text-transform: uppercase;">كتالوج الصادرات والمواصفات الفنية</span>
+    <h1 style="font-size: 2.25rem; margin-top: 0.25rem; margin-bottom: 0.5rem;">دليل السلع والمنتجات المعتمدة للتصدير والاستيراد</h1>
+    <p style="color: var(--text-muted); max-width: 800px; margin-bottom: 0;">
+      جميع المنتجات حاصلة على شهادات المطابقة القياسية والتحليل المعملي، ومعدة وفق شروط التعبئة والتغليف الخاصة بالأسواق الأوروبية، الخليجية، والآسيوية.
+    </p>
+  </div>
+</section>
+
+<section class="py-section bg-white">
+  <div class="container">
+    <!-- Filter and Search Bar -->
+    <div class="filter-bar">
+      <div style="flex: 1; min-width: 260px;">
+        <form method="GET" action="{% url 'products' %}" style="display: flex; gap: 0.5rem;">
+          {% if selected_category %}
+            <input type="hidden" name="category" value="{{ selected_category }}">
+          {% endif %}
+          <input type="text" name="q" value="{{ query }}" placeholder="ابحث باسم المنتج، الوصف، أو بلد المنشأ..." class="form-input" style="padding: 0.45rem 0.75rem;">
+          <button type="submit" class="btn btn-secondary btn-sm" style="white-space: nowrap;">بحث</button>
+          {% if query or selected_category %}
+            <a href="{% url 'products' %}" class="btn btn-outline btn-sm" style="white-space: nowrap;">إعادة تعيين</a>
+          {% endif %}
+        </form>
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div class="filter-pills">
+        <a href="{% url 'products' %}{% if query %}?q={{ query }}{% endif %}" class="filter-pill {% if not selected_category %}active{% endif %}">
+          كافة التصنيفات ({{ total_count }})
+        </a>
+        {% for cat_code, cat_data in category_counts.items %}
+          <a href="{% url 'products' %}?category={{ cat_code }}{% if query %}&q={{ query }}{% endif %}" class="filter-pill {% if selected_category == cat_code %}active{% endif %}">
+            {{ cat_data.label }} ({{ cat_data.count }})
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="products-grid">
+      {% for product in page_obj %}
+        <article class="product-card">
+          <div class="product-image-container">
+            {% if product.image %}
+              <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            {% else %}
+              <div class="product-image-placeholder">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                  <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                  <line x1="12" y1="22.08" x2="12" y2="12"/>
+                </svg>
+                <span>[صورة الصنف والعبوة التصديرية]</span>
+              </div>
+            {% endif %}
+            <span class="product-badge">{{ product.get_category_display }}</span>
+          </div>
+
+          <div class="product-body">
+            <span class="product-category">المنشأ: {{ product.origin }}</span>
+            <h3 class="product-title">{{ product.name }}</h3>
+
+            <!-- Technical Specification Badges -->
+            <div class="spec-badges-row">
+              {% if product.hs_code %}
+                <span class="spec-badge spec-badge-hs" title="الرمز الجمركي المنسق">HS {{ product.hs_code }}</span>
+              {% endif %}
+              {% if product.temperature_range %}
+                <span class="spec-badge spec-badge-temp" title="درجة حرارة النقل المبرد">{{ product.temperature_range }}</span>
+              {% endif %}
+              {% if product.harvest_season %}
+                <span class="spec-badge spec-badge-season" title="موسم التصدير">{{ product.harvest_season }}</span>
+              {% endif %}
+            </div>
+
+            <p class="product-desc">{{ product.description }}</p>
+
+            <!-- Technical Spec Drawer Button -->
+            <button type="button" class="tech-details-toggle" aria-expanded="false">
+              المواصفات الفنية المعتمدة (HS / درجة الحفظ / المعايرة) ↓
+            </button>
+            <div class="tech-drawer">
+              <dl>
+                {% if product.hs_code %}
+                  <dt>الرمز الجمركي (HS):</dt>
+                  <dd style="font-family: var(--font-mono);">{{ product.hs_code }}</dd>
+                {% endif %}
+                {% if product.caliber_specs %}
+                  <dt>الأحجام والمعايرة:</dt>
+                  <dd>{{ product.caliber_specs }}</dd>
+                {% endif %}
+                {% if product.packaging_type %}
+                  <dt>نوع التعبئة والتغليف:</dt>
+                  <dd>{{ product.packaging_type }}</dd>
+                {% endif %}
+                {% if product.temperature_range %}
+                  <dt>حرارة النقل والتبريد:</dt>
+                  <dd>{{ product.temperature_range }}</dd>
+                {% endif %}
+                {% if product.harvest_season %}
+                  <dt>موسم الحصاد والتصدير:</dt>
+                  <dd>{{ product.harvest_season }}</dd>
+                {% endif %}
+              </dl>
+            </div>
+            
+            <div class="product-meta" style="margin-top: 1rem;">
+              <span style="font-size: 0.8rem; color: var(--text-muted);">
+                شروط التسليم: FOB / CIF
+              </span>
+              <a href="{% url 'contact' %}?product={{ product.id }}" class="btn btn-primary btn-sm">طلب عرض أسعار</a>
+            </div>
+          </div>
+        </article>
+      {% empty %}
+        <div style="grid-column: 1 / -1; text-align: center; padding: 3.5rem 1rem; background-color: var(--sand-50); border: 1px dashed var(--border-light);">
+          <h3 style="margin-bottom: 0.5rem;">لم يتم العثور على منتجات مطابقة للبحث</h3>
+          <p style="color: var(--text-muted); margin-bottom: 1.5rem;">جرب البحث بكلمات أخرى أو اختر تصنيفاً مختلفاً من القائمة.</p>
+          <a href="{% url 'products' %}" class="btn btn-secondary btn-sm">عرض كافة المنتجات</a>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+      <nav class="pagination" aria-label="ترقيم الصفحات">
+        {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if query %}&q={{ query }}{% endif %}" class="page-item">
+            السابق
+          </a>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+          {% if page_obj.number == num %}
+            <span class="page-item active">{{ num }}</span>
+          {% else %}
+            <a href="?page={{ num }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if query %}&q={{ query }}{% endif %}" class="page-item">
+              {{ num }}
+            </a>
+          {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if query %}&q={{ query }}{% endif %}" class="page-item">
+            التالي
+          </a>
+        {% endif %}
+      </nav>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

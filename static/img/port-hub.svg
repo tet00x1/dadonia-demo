@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 350" width="100%" height="100%" style="background:#0e2030;">
+  <!-- Editorial Port Silhouette -->
+  <line x1="0" y1="280" x2="600" y2="280" stroke="#22384a" stroke-width="2"/>
+  <rect x="0" y="280" width="600" height="70" fill="#08141d"/>
+  
+  <!-- Gantry Crane Outline -->
+  <path d="M80 280 L120 120 L240 120 L270 280 M120 120 L80 120 L320 120" stroke="#b85d38" stroke-width="3" fill="none"/>
+  <line x1="160" y1="120" x2="160" y2="200" stroke="#f5f2e9" stroke-width="2" stroke-dasharray="4,4"/>
+  <rect x="145" y="200" width="30" height="20" fill="#b85d38"/>
+  
+  <!-- Container Stacks -->
+  <rect x="360" y="220" width="70" height="28" fill="#1b3f5c" stroke="#0e2030"/>
+  <rect x="435" y="220" width="70" height="28" fill="#b85d38" stroke="#0e2030"/>
+  <rect x="390" y="190" width="70" height="28" fill="#d6ccb8" stroke="#0e2030"/>
+  <rect x="465" y="190" width="70" height="28" fill="#1b3f5c" stroke="#0e2030"/>
+  <rect x="420" y="160" width="70" height="28" fill="#b85d38" stroke="#0e2030"/>
+
+  <text x="40" y="50" fill="#f5f2e9" font-family="'Cairo', sans-serif" font-size="20" font-weight="700">ميناء الإسكندرية ومحطات الحاويات</text>
+  <text x="40" y="75" fill="#d6ccb8" font-family="'IBM Plex Mono', monospace" font-size="12">ALEXANDRIA SEAPORT LOGISTICS TERMINAL [REAL PHOTO SLOT]</text>
+</svg>

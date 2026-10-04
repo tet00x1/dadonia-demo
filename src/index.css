@@ -1,0 +1,111 @@
+@import "tailwindcss";
+
+html {
+  scroll-behavior: smooth;
+}
+
+section[id] {
+  scroll-margin-top: 72px;
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Gentle image zoom on hover for photo cards */
+main img {
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+main .overflow-hidden:hover > img,
+main .overflow-hidden:hover img {
+  transform: scale(1.04);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+}
+
+h1, h2 { font-family: 'Amiri', 'Cairo', serif; font-weight: 700; }
+:focus-visible { outline: 2px solid #a77a1c; outline-offset: 3px; }
+
+/* ===== Dark mode (generated from the utility classes used) ===== */
+html.dark{color-scheme:dark}
+html.dark body{background:#04211c;color:#eef4f0}
+html.dark ::selection{background:#e2bc55;color:#031d19}
+html.dark [class~="bg-[#082f28]"]{background-color:#0f4a3f !important}
+html.dark [class~="bg-[#082f28]/10"]{background-color:rgba(15,74,63,0.1) !important}
+html.dark [class~="bg-[#082f28]/5"]{background-color:rgba(15,74,63,0.05) !important}
+html.dark [class~="bg-[#d9e1d8]"]{background-color:#123d35 !important}
+html.dark [class~="bg-[#eceee6]"]{background-color:#072b25 !important}
+html.dark [class~="bg-[#f7f7f1]"]{background-color:#04211c !important}
+html.dark [class~="bg-[#f7f7f1]/90"]{background-color:rgba(4,33,28,0.9) !important}
+html.dark [class~="bg-white"]{background-color:#0a3830 !important}
+html.dark [class~="border-[#082f28]/10"]{border-color:rgba(238,244,240,0.1) !important}
+html.dark [class~="border-[#082f28]/15"]{border-color:rgba(238,244,240,0.15) !important}
+html.dark [class~="border-[#082f28]/60"]{border-color:rgba(238,244,240,0.6) !important}
+html.dark [class~="divide-[#082f28]/10"] > :not(:last-child){border-color:rgba(238,244,240,0.1) !important}
+html.dark [class~="hover:bg-[#082f28]"]:hover{background-color:#0f4a3f !important}
+html.dark [class~="hover:bg-[#082f28]/5"]:hover{background-color:rgba(15,74,63,0.05) !important}
+html.dark [class~="hover:bg-[#eceee6]"]:hover{background-color:#072b25 !important}
+html.dark [class~="hover:text-[#a77a1c]"]:hover,html.dark [class~="hover:text-[#8f6612]"]:hover{color:#e2bc55 !important}
+html.dark [class~="text-[#082f28]"]{color:#eef4f0 !important}
+html.dark [class~="text-[#34483f]"]{color:#b6c8c0 !important}
+html.dark [class~="text-[#4c605a]"]{color:#9db4aa !important}
+html.dark [class~="text-[#566a63]"]{color:#9db4aa !important}
+html.dark [class~="text-[#a77a1c]"],html.dark [class~="text-[#8f6612]"]{color:#e2bc55 !important}
+/* LTR (English) mirroring for the few physical-direction classes */
+html[dir=ltr] .lg\:rounded-r-2xl{border-radius:1rem 0 0 1rem}
+html[dir=ltr] .lg\:rounded-l-2xl{border-radius:0 1rem 1rem 0}
+html[dir=ltr] .md\:text-right{text-align:left}
+html[dir=ltr] .origin-right{transform-origin:left}
+html[dir=ltr] h1,html[dir=ltr] h2{font-family:'Playfair Display','Amiri',Georgia,serif}
+@media (min-width: 0px){
+html.dark [class~="bg-white/90"]{background-color:rgba(4,33,28,.9) !important}
+html.dark [class~="bg-white/95"]{background-color:rgba(4,33,28,.95) !important}
+}
+
+/* ===== Extra motion ===== */
+.wave-divider{color:#082f28}
+html.dark .wave-divider{color:#0f4a3f}
+.wave-divider .wave{position:absolute;left:0;bottom:0;width:200%;height:100%}
+.wave-divider .wave-back{animation:wave-drift 22s linear infinite}
+.wave-divider .wave-front{animation:wave-drift 14s linear infinite reverse}
+@keyframes wave-drift{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* light streak across cards on hover */
+.shine{position:relative;overflow:hidden}
+.shine::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(115deg,transparent 35%,rgba(226,188,85,.18) 50%,transparent 65%);
+  transform:translateX(-120%);transition:transform .9s cubic-bezier(.22,1,.36,1)}
+.shine:hover::after{transform:translateX(120%)}
+
+/* hero spotlight following the pointer */
+.hero-spot{position:absolute;inset:0;pointer-events:none;border-radius:inherit;opacity:0;transition:opacity .5s;
+  background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%),rgba(226,188,85,.14),transparent 65%)}
+.hero-spot-host:hover .hero-spot{opacity:1}
+
+/* soft pulse ring behind the WhatsApp button */
+.wa-pulse{position:relative}
+.wa-pulse::before{content:"";position:absolute;inset:0;border-radius:9999px;background:#25D366;opacity:.5;
+  animation:wa-ring 2.8s ease-out infinite;z-index:-1}
+@keyframes wa-ring{0%{transform:scale(1);opacity:.45}70%,100%{transform:scale(1.5);opacity:0}}
+
+/* slow float for the hero emblem */
+.float-slow{animation:float-slow 7s ease-in-out infinite}
+@keyframes float-slow{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+@media (prefers-reduced-motion: reduce){
+  .wave-divider .wave,.wa-pulse::before,.float-slow{animation:none !important}
+  .shine::after{display:none}
+}

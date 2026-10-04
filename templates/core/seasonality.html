@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}التقويم التصديري والزراعي السنوي - {{ COMPANY_NAME_AR }}{% endblock %}
+
+{% block content %}
+<section class="py-section bg-sand" style="border-bottom: 1px solid var(--border-light); padding: 2.5rem 0;">
+  <div class="container">
+    <span style="font-size: 0.85rem; font-weight: 700; color: var(--accent); text-transform: uppercase;">مواعيد الحصاد ومواسم الشحن البحري</span>
+    <h1 style="font-size: 2.25rem; margin-top: 0.25rem; margin-bottom: 0.5rem;">التقويم التصديري والإنتاجي للحاصلات المصرية</h1>
+    <p style="color: var(--text-muted); max-width: 850px; margin-bottom: 0;">
+      دليل شامل للمستوردين والشركاء التجاريين حول مواسم جني الحاصلات الزراعية، فترات ذروة الإبحار، وتوفر الأصناف بالمستودعات المبردة وسلاسل التخزين على مدار أشهر العام.
+    </p>
+  </div>
+</section>
+
+<section class="py-section bg-white">
+  <div class="container">
+
+    <!-- Legend bar -->
+    <div style="background-color: var(--sand-50); border: 1px solid var(--border-light); padding: 1rem 1.25rem; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+      <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: center; font-size: 0.85rem;">
+        <span style="font-weight: 700; color: var(--navy-800);">دليل دلالات الحالات:</span>
+        <span style="display: inline-flex; align-items: center; gap: 6px;">
+          <span style="width: 14px; height: 14px; background-color: #27ae60; display: inline-block;"></span>
+          <strong>ذروة الموسم والجني (Peak)</strong>
+        </span>
+        <span style="display: inline-flex; align-items: center; gap: 6px;">
+          <span style="width: 14px; height: 14px; background-color: #f39c12; display: inline-block;"></span>
+          <strong>بداية أو نهاية الموسم (Transition)</strong>
+        </span>
+        <span style="display: inline-flex; align-items: center; gap: 6px;">
+          <span style="width: 14px; height: 14px; background-color: #2980b9; display: inline-block;"></span>
+          <strong>متاح بالمستودعات المبردة (Storage)</strong>
+        </span>
+        <span style="display: inline-flex; align-items: center; gap: 6px;">
+          <span style="width: 14px; height: 14px; background-color: var(--sand-200); display: inline-block;"></span>
+          <span style="color: var(--text-muted);">خارج الموسم (Off-Season)</span>
+        </span>
+      </div>
+
+      <div>
+        <span style="font-size: 0.8rem; background-color: var(--navy-800); color: #ffffff; padding: 4px 10px; font-weight: 600;">
+          الشهر الحالي المميز: شهر {{ current_month }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Calendar Table -->
+    <div class="table-container" style="overflow-x: auto;">
+      <table class="data-table" style="min-width: 950px;">
+        <thead>
+          <tr>
+            <th style="min-width: 220px;">المحصول التصديري</th>
+            <th>الرمز الجمركي</th>
+            <th>درجة الحفظ</th>
+            {% for m_num, m_name in months_labels %}
+              <th style="text-align: center; font-size: 0.85rem; padding: 0.6rem 0.35rem; {% if m_num == current_month %}background-color: var(--navy-800); color: #ffffff;{% endif %}">
+                {{ m_name }}
+              </th>
+            {% endfor %}
+            <th style="text-align: center;">إجراء</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in calendar_data %}
+            <tr>
+              <td>
+                <strong>{{ item.crop }}</strong>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">{{ item.category }}</div>
+              </td>
+              <td style="font-family: var(--font-mono); font-size: 0.8rem; direction: ltr; text-align: right;">
+                {{ item.hs }}
+              </td>
+              <td style="font-size: 0.8rem; color: var(--navy-800); white-space: nowrap;">
+                {{ item.temp }}
+              </td>
+              {% for m_num, m_name in months_labels %}
+                {% with status=item.months|default:'' %}
+                  <td style="text-align: center; padding: 0.4rem 0.2rem; {% if m_num == current_month %}background-color: #faf7f0; border-left: 2px solid var(--navy-800); border-right: 2px solid var(--navy-800);{% endif %}">
+                    {% if m_num == 1 and item.months.1 == 'start' or m_num == 2 and item.months.2 == 'start' or m_num == 3 and item.months.3 == 'start' or m_num == 4 and item.months.4 == 'start' or m_num == 5 and item.months.5 == 'start' or m_num == 6 and item.months.6 == 'start' or m_num == 7 and item.months.7 == 'start' or m_num == 8 and item.months.8 == 'start' or m_num == 9 and item.months.9 == 'start' or m_num == 10 and item.months.10 == 'start' or m_num == 11 and item.months.11 == 'start' or m_num == 12 and item.months.12 == 'start' %}
+                      <span style="display: block; height: 26px; line-height: 26px; background-color: #f39c12; color: #fff; font-size: 0.7rem; font-weight: bold;">بدء</span>
+                    {% elif m_num == 1 and item.months.1 == 'peak' or m_num == 2 and item.months.2 == 'peak' or m_num == 3 and item.months.3 == 'peak' or m_num == 4 and item.months.4 == 'peak' or m_num == 5 and item.months.5 == 'peak' or m_num == 6 and item.months.6 == 'peak' or m_num == 7 and item.months.7 == 'peak' or m_num == 8 and item.months.8 == 'peak' or m_num == 9 and item.months.9 == 'peak' or m_num == 10 and item.months.10 == 'peak' or m_num == 11 and item.months.11 == 'peak' or m_num == 12 and item.months.12 == 'peak' %}
+                      <span style="display: block; height: 26px; line-height: 26px; background-color: #27ae60; color: #fff; font-size: 0.7rem; font-weight: bold;">ذروة</span>
+                    {% elif m_num == 1 and item.months.1 == 'end' or m_num == 2 and item.months.2 == 'end' or m_num == 3 and item.months.3 == 'end' or m_num == 4 and item.months.4 == 'end' or m_num == 5 and item.months.5 == 'end' or m_num == 6 and item.months.6 == 'end' or m_num == 7 and item.months.7 == 'end' or m_num == 8 and item.months.8 == 'end' or m_num == 9 and item.months.9 == 'end' or m_num == 10 and item.months.10 == 'end' or m_num == 11 and item.months.11 == 'end' or m_num == 12 and item.months.12 == 'end' %}
+                      <span style="display: block; height: 26px; line-height: 26px; background-color: #e67e22; color: #fff; font-size: 0.7rem; font-weight: bold;">نهاية</span>
+                    {% elif m_num == 1 and item.months.1 == 'storage' or m_num == 2 and item.months.2 == 'storage' or m_num == 3 and item.months.3 == 'storage' or m_num == 4 and item.months.4 == 'storage' or m_num == 5 and item.months.5 == 'storage' or m_num == 6 and item.months.6 == 'storage' or m_num == 7 and item.months.7 == 'storage' or m_num == 8 and item.months.8 == 'storage' or m_num == 9 and item.months.9 == 'storage' or m_num == 10 and item.months.10 == 'storage' or m_num == 11 and item.months.11 == 'storage' or m_num == 12 and item.months.12 == 'storage' %}
+                      <span style="display: block; height: 26px; line-height: 26px; background-color: #2980b9; color: #fff; font-size: 0.65rem; font-weight: bold;">تبريد</span>
+                    {% else %}
+                      <span style="display: block; height: 26px; line-height: 26px; background-color: var(--sand-100); color: var(--text-muted); font-size: 0.65rem;">—</span>
+                    {% endif %}
+                  </td>
+                {% endwith %}
+              {% endfor %}
+              <td style="text-align: center; white-space: nowrap;">
+                <a href="{% url 'contact' %}?crop={{ item.crop }}" class="btn btn-outline btn-sm" style="font-size: 0.75rem; padding: 2px 8px;">
+                  طلب حجز
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Booking note -->
+    <div style="margin-top: 2rem; background-color: var(--navy-800); color: #ffffff; padding: 1.75rem; border: 1px solid var(--border-dark); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+      <div>
+        <h3 style="color: #ffffff; font-size: 1.25rem; margin-bottom: 0.35rem;">
+          عقود التوريد المسبقة وجداول الشحن السنوية (Contract Farming & Supply Agreements)
+        </h3>
+        <p style="color: var(--sand-200); margin-bottom: 0; font-size: 0.9rem;">
+          نوفر للمستوردين عقود توريد موسمية بأسعار ثابتة وبرامج شحن أسبوعية منتظمة عبر خطوط الملاحة المباشرة من موانئ الإسكندرية ودمياط.
+        </p>
+      </div>
+      <div>
+        <a href="{% url 'contact' %}" class="btn btn-primary">
+          طلب برنامج تعاقد موسمي ←
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,307 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}لوحة رقابة وتدقيق حركة الموظفين - الإدارة العليا - {{ COMPANY_NAME_AR }}{% endblock %}
+
+{% block content %}
+<!-- Audit Header Banner -->
+<section class="audit-header">
+  <div class="container">
+    <div class="audit-header-inner">
+      <div>
+        <div style="font-size: 0.8rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px;">
+          سجل الحصانة والرقابة الأمنية الصارمة (Append-Only Audit Engine)
+        </div>
+        <h1 style="font-size: 2rem; color: #ffffff; margin-top: 0.25rem; margin-bottom: 0.35rem;">
+          لوحة مراقبة نشاطات الموظفين والعمليات اللوجستية
+        </h1>
+        <p style="color: var(--sand-200); font-size: 0.9rem; margin-bottom: 0;">
+          خاص بمالك المنظومة ومدير عام الشركة: تدقيق كامل لعمليات تسجيل الدخول، الإضافة، التعديل، والحذف مع حفظ الفروق الرقمية.
+        </p>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <!-- CSV Export preserving current query string -->
+        <a href="?export=csv{% if selected_employee %}&employee={{ selected_employee }}{% endif %}{% if selected_action %}&action={{ selected_action }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}{% if query %}&q={{ query }}{% endif %}" 
+           class="btn btn-primary btn-sm" style="font-size: 0.85rem;" title="تصدير السجل بتنسيق CSV متوافق مع إكسل">
+          📥 تصدير السجل CSV (إكسل)
+        </a>
+        <a href="/admin/" class="btn btn-outline btn-sm" style="border-color: var(--sand-300); color: var(--sand-300);" title="الانتقال إلى الإدارة المركزية">
+          بوابة الإدارة المركزية ←
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="py-section bg-sand" style="padding-top: 2rem;">
+  <div class="container">
+
+    <!-- KPI Metric Cards -->
+    <div class="audit-metrics-row">
+      <div class="metric-box accent-box">
+        <div class="metric-box-title">إجمالي العمليات المسجلة بالسجل</div>
+        <div class="metric-box-val">{{ total_all_logs }}</div>
+        <div class="metric-box-desc">غير قابلة للتعديل أو الحذف برمجياً</div>
+      </div>
+
+      <div class="metric-box">
+        <div class="metric-box-title">النتائج المطابقة للتصفية الحالية</div>
+        <div class="metric-box-val">{{ total_filtered }}</div>
+        <div class="metric-box-desc">معروضة حالياً عبر الجداول</div>
+      </div>
+
+      <div class="metric-box">
+        <div class="metric-box-title">عدد الموظفين الخاضعين للرقابة</div>
+        <div class="metric-box-val">{{ employee_summaries|length }}</div>
+        <div class="metric-box-desc">حسابات نشطة في الأقسام التجارية واللوجستية</div>
+      </div>
+
+      <div class="metric-box">
+        <div class="metric-box-title">توقيت خادم المنظومة الرسمي</div>
+        <div class="metric-box-val" style="font-size: 1.25rem; font-family: var(--font-mono);">
+          {{ cairo_now|date:"H:i:s" }}
+        </div>
+        <div class="metric-box-desc">توقيت القاهرة الدولي (GMT+2)</div>
+      </div>
+    </div>
+
+    <!-- Small Per-Employee Summary Card -->
+    <div class="summary-card">
+      <div class="summary-card-header">
+        <h3 class="summary-card-title">ملخص أداء وحركة الموظفين (Per-Employee Activity Summary)</h3>
+        <span style="font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono);">محدث تلقائياً</span>
+      </div>
+      <div class="table-container" style="border: none;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>الموظف المسؤول</th>
+              <th>اسم المستخدم</th>
+              <th>الدور الوظيفي والصلاحيات</th>
+              <th>آخر تسجيل دخول</th>
+              <th>عمليات اليوم</th>
+              <th>عمليات هذا الأسبوع</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for emp in employee_summaries %}
+              <tr>
+                <td><strong>{{ emp.full_name }}</strong></td>
+                <td>
+                  <span style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--navy-800);">
+                    @{{ emp.user.username }}
+                  </span>
+                </td>
+                <td>
+                  <span style="font-size: 0.825rem; color: var(--text-muted);">
+                    {{ emp.role }}
+                  </span>
+                </td>
+                <td style="font-family: var(--font-mono); font-size: 0.85rem;">
+                  {% if emp.last_login %}
+                    {{ emp.last_login|date:"Y-m-d H:i" }}
+                  {% else %}
+                    <span style="color: var(--text-muted);">لم يسجل بعد</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <span style="font-family: var(--font-mono); font-weight: 700; color: {% if emp.today_actions > 0 %}var(--navy-800){% else %}var(--text-muted){% endif %};">
+                    {{ emp.today_actions }}
+                  </span>
+                </td>
+                <td>
+                  <span style="font-family: var(--font-mono); font-weight: 700; color: {% if emp.week_actions > 0 %}var(--accent){% else %}var(--text-muted){% endif %};">
+                    {{ emp.week_actions }}
+                  </span>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Filter & Search Controls -->
+    <div class="form-card" style="margin-bottom: 2rem; padding: 1.5rem;">
+      <h3 style="font-size: 1.1rem; margin-bottom: 1rem; color: var(--navy-800);">
+        تصفية وبحث في سجل التدقيق الأمني
+      </h3>
+
+      <form method="GET" action="{% url 'activity_dashboard' %}">
+        <div class="filter-grid-audit">
+          <!-- Employee select -->
+          <div>
+            <label class="form-label" style="font-size: 0.8rem;">الموظف</label>
+            <select name="employee" class="form-select" style="font-size: 0.85rem; padding: 0.5rem;">
+              <option value="">-- كافة الموظفين --</option>
+              {% for emp in all_employees %}
+                <option value="{{ emp.id }}" {% if selected_employee == emp.id|stringformat:"s" %}selected{% endif %}>
+                  {{ emp.get_full_name|default:emp.username }} (@{{ emp.username }})
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Action select -->
+          <div>
+            <label class="form-label" style="font-size: 0.8rem;">نوع الإجراء</label>
+            <select name="action" class="form-select" style="font-size: 0.85rem; padding: 0.5rem;">
+              <option value="">-- كافة الإجراءات --</option>
+              {% for act_val, act_lbl in action_choices %}
+                <option value="{{ act_val }}" {% if selected_action == act_val %}selected{% endif %}>
+                  {{ act_lbl }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Date from -->
+          <div>
+            <label class="form-label" style="font-size: 0.8rem;">من تاريخ</label>
+            <input type="date" name="date_from" value="{{ date_from }}" class="form-input" style="font-size: 0.85rem; padding: 0.45rem;">
+          </div>
+
+          <!-- Date to -->
+          <div>
+            <label class="form-label" style="font-size: 0.8rem;">إلى تاريخ</label>
+            <input type="date" name="date_to" value="{{ date_to }}" class="form-input" style="font-size: 0.85rem; padding: 0.45rem;">
+          </div>
+
+          <!-- Text query -->
+          <div>
+            <label class="form-label" style="font-size: 0.8rem;">بحث نصي حر</label>
+            <input type="text" name="q" value="{{ query }}" placeholder="بحث بالبيان، IP، الحقول..." class="form-input" style="font-size: 0.85rem; padding: 0.45rem;">
+          </div>
+
+          <!-- Buttons -->
+          <div style="display: flex; gap: 0.5rem;">
+            <button type="submit" class="btn btn-secondary btn-sm" style="height: 38px;">تطبيق الفلتر</button>
+            {% if selected_employee or selected_action or date_from or date_to or query %}
+              <a href="{% url 'activity_dashboard' %}" class="btn btn-outline btn-sm" style="height: 38px;">إلغاء</a>
+            {% endif %}
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Main Audit Log Table -->
+    <div class="summary-card">
+      <div class="summary-card-header">
+        <h3 class="summary-card-title">
+          سجل العمليات والتدقيق الرقمي ({{ total_filtered }} حركة)
+        </h3>
+        <span style="font-size: 0.775rem; color: var(--text-muted);">
+          محمي ضد الحذف أو التعديل بنظام التحقق الداخلي
+        </span>
+      </div>
+
+      <div class="table-container" style="border: none;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="min-width: 140px;">التوقيت</th>
+              <th>الموظف المسؤول</th>
+              <th>نوع الإجراء</th>
+              <th style="min-width: 250px;">بيان العملية والهدف</th>
+              <th>فروق التعديل (قبل وبعد)</th>
+              <th>عنوان IP</th>
+              <th style="max-width: 200px;">المتصفح والنظام</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for log in page_obj %}
+              <tr>
+                <td style="font-family: var(--font-mono); font-size: 0.825rem; white-space: nowrap;">
+                  {{ log.timestamp|date:"Y-m-d H:i:s" }}
+                </td>
+                <td>
+                  <strong>{{ log.username_snapshot }}</strong>
+                  {% if log.user and log.user.get_full_name %}
+                    <br><span style="font-size: 0.75rem; color: var(--text-muted);">{{ log.user.get_full_name }}</span>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if log.action == 'login' %}
+                    <span style="background-color: #27ae60; color: #fff; padding: 2px 7px; font-size: 0.75rem; font-weight: bold;">دخول ناجح</span>
+                  {% elif log.action == 'logout' %}
+                    <span style="background-color: #7f8c8d; color: #fff; padding: 2px 7px; font-size: 0.75rem; font-weight: bold;">تسجيل خروج</span>
+                  {% elif log.action == 'failed login' %}
+                    <span style="background-color: #c0392b; color: #fff; padding: 2px 7px; font-size: 0.75rem; font-weight: bold;">دخول فاشل</span>
+                  {% elif log.action == 'create' %}
+                    <span style="background-color: #2980b9; color: #fff; padding: 2px 7px; font-size: 0.75rem; font-weight: bold;">إنشاء جديد</span>
+                  {% elif log.action == 'update' %}
+                    <span style="background-color: #d35400; color: #fff; padding: 2px 7px; font-size: 0.75rem; font-weight: bold;">تعديل بيانات</span>
+                  {% elif log.action == 'delete' %}
+                    <span style="background-color: #8e1b1b; color: #fff; padding: 2px 7px; font-size: 0.75rem; font-weight: bold;">حذف سجل</span>
+                  {% endif %}
+                </td>
+                <td style="font-size: 0.875rem;">
+                  {{ log.target_description }}
+                </td>
+                <td>
+                  {% if log.changed_fields %}
+                    <div class="diff-box">
+                      {% for field_name, diff_val in log.changed_fields.items %}
+                        <div>
+                          <div class="diff-field">{{ field_name }}:</div>
+                          <span style="color: #c0392b; text-decoration: line-through;">{{ diff_val.old|default:"(فارغ)" }}</span>
+                          <span style="color: #27ae60; font-weight: bold;"> → {{ diff_val.new|default:"(فارغ)" }}</span>
+                        </div>
+                      {% endfor %}
+                    </div>
+                  {% else %}
+                    <span style="color: var(--text-muted); font-size: 0.8rem;">—</span>
+                  {% endif %}
+                </td>
+                <td style="font-family: var(--font-mono); font-size: 0.825rem;">
+                  {{ log.ip_address|default:"127.0.0.1" }}
+                </td>
+                <td style="font-size: 0.75rem; color: var(--text-muted); max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ log.user_agent }}">
+                  {{ log.user_agent|default:"—" }}
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="7" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                  لا توجد سجلات تطابق شروط التصفية المحددة.
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      {% if page_obj.has_other_pages %}
+        <div style="padding: 1.25rem; border-top: 1px solid var(--border-light);">
+          <nav class="pagination" aria-label="ترقيم صفحات سجل النشاطات">
+            {% if page_obj.has_previous %}
+              <a href="?page={{ page_obj.previous_page_number }}{% if selected_employee %}&employee={{ selected_employee }}{% endif %}{% if selected_action %}&action={{ selected_action }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}{% if query %}&q={{ query }}{% endif %}" class="page-item">
+                السابق
+              </a>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+              {% if page_obj.number == num %}
+                <span class="page-item active">{{ num }}</span>
+              {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?page={{ num }}{% if selected_employee %}&employee={{ selected_employee }}{% endif %}{% if selected_action %}&action={{ selected_action }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}{% if query %}&q={{ query }}{% endif %}" class="page-item">
+                  {{ num }}
+                </a>
+              {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+              <a href="?page={{ page_obj.next_page_number }}{% if selected_employee %}&employee={{ selected_employee }}{% endif %}{% if selected_action %}&action={{ selected_action }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}{% if query %}&q={{ query }}{% endif %}" class="page-item">
+                التالي
+              </a>
+            {% endif %}
+          </nav>
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}

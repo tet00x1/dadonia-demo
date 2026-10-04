@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}تتبع بوليصة الشحن والعمليات اللوجستية - {{ COMPANY_NAME_AR }}{% endblock %}
+
+{% block content %}
+<section class="py-section bg-sand" style="border-bottom: 1px solid var(--border-light); padding: 2.5rem 0;">
+  <div class="container">
+    <span style="font-size: 0.85rem; font-weight: 700; color: var(--accent); text-transform: uppercase;">نظام المتابعة الحية للشحنات</span>
+    <h1 style="font-size: 2.25rem; margin-top: 0.25rem; margin-bottom: 0.5rem;">تتبع حركة الحاويات وبوالص الشحن البحري</h1>
+    <p style="color: var(--text-muted); max-width: 800px; margin-bottom: 0;">
+      استعلم لحظياً عن وضع شحنتك ومراحل الفحص الجمركي والإبحار عبر إدخال رقم البوليصة المرجعي (Shipment Reference Number).
+    </p>
+  </div>
+</section>
+
+<section class="py-section bg-white">
+  <div class="container">
+    <!-- Tracking Search Card -->
+    <div class="form-card" style="max-width: 720px; margin: 0 auto 3rem;">
+      <h3 style="margin-bottom: 1rem; border-bottom: 1px solid var(--border-light); padding-bottom: 0.5rem;">
+        أدخل رقم بوليصة الشحن (Reference No.)
+      </h3>
+      <form method="GET" action="{% url 'track' %}">
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <input type="text" name="ref" value="{{ ref }}" placeholder="مثال: EGY-EXP-2026-089 أو EGY-EXP-2026-104" class="form-input" style="flex: 1; min-width: 250px; font-family: var(--font-mono); font-size: 1rem;" dir="ltr" required>
+          <button type="submit" class="btn btn-primary" style="padding: 0.65rem 1.5rem;">استعلام عن الشحنة ←</button>
+        </div>
+      </form>
+
+      <div style="margin-top: 1rem; font-size: 0.825rem; color: var(--text-muted);">
+        <strong>أرقام تجريبية سريعة للفحص:</strong>
+        <a href="?ref=EGY-EXP-2026-089" style="font-family: var(--font-mono); margin: 0 4px; text-decoration: underline;">EGY-EXP-2026-089</a> |
+        <a href="?ref=EGY-EXP-2026-104" style="font-family: var(--font-mono); margin: 0 4px; text-decoration: underline;">EGY-EXP-2026-104</a> |
+        <a href="?ref=EGY-EXP-2026-118" style="font-family: var(--font-mono); margin: 0 4px; text-decoration: underline;">EGY-EXP-2026-118</a> |
+        <a href="?ref=EGY-EXP-2026-135" style="font-family: var(--font-mono); margin: 0 4px; text-decoration: underline;">EGY-EXP-2026-135</a>
+      </div>
+    </div>
+
+    <!-- Tracking Result -->
+    {% if shipment %}
+      <div style="max-width: 900px; margin: 0 auto; background-color: var(--sand-50); border: 1px solid var(--border-light); padding: 2rem;">
+        <!-- Header info -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; border-bottom: 2px solid var(--navy-800); padding-bottom: 1.25rem;">
+          <div>
+            <span style="font-family: var(--font-mono); font-size: 1.25rem; font-weight: 700; color: var(--navy-800);">
+              {{ shipment.reference }}
+            </span>
+            <h2 style="font-size: 1.5rem; margin-top: 0.25rem;">{{ shipment.product.name }}</h2>
+            <div style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.25rem;">
+              نوع العملية: <strong>{{ shipment.get_kind_display }}</strong> • الوجهة / المصدر: <strong>{{ shipment.country }}</strong>
+            </div>
+          </div>
+          <div>
+            <span class="status-indicator status-{{ shipment.status }}" style="font-size: 1.1rem; padding: 0.4rem 0.8rem; background-color: #ffffff; border: 1px solid var(--border-light);">
+              <span class="status-dot"></span>
+              {{ shipment.get_status_display }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Stepper -->
+        <div class="tracking-stepper">
+          <!-- Step 1: preparing -->
+          <div class="step-item {% if shipment.status == 'preparing' %}active{% elif shipment.status in 'shipped,customs,delivered' %}completed{% endif %}">
+            <div class="step-marker">1</div>
+            <div class="step-label">التجهيز والتعبئة بالمستودع</div>
+          </div>
+
+          <!-- Step 2: shipped -->
+          <div class="step-item {% if shipment.status == 'shipped' %}active{% elif shipment.status in 'customs,delivered' %}completed{% endif %}">
+            <div class="step-marker">2</div>
+            <div class="step-label">الإبحار والنقل الدولي</div>
+          </div>
+
+          <!-- Step 3: customs -->
+          <div class="step-item {% if shipment.status == 'customs' %}active{% elif shipment.status in 'delivered' %}completed{% endif %}">
+            <div class="step-marker">3</div>
+            <div class="step-label">التخليص والفحص الرقابي</div>
+          </div>
+
+          <!-- Step 4: delivered -->
+          <div class="step-item {% if shipment.status == 'delivered' %}completed active{% endif %}">
+            <div class="step-marker">4</div>
+            <div class="step-label">التسليم النهائي</div>
+          </div>
+        </div>
+
+        <!-- Shipment Details Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; background-color: #ffffff; border: 1px solid var(--border-light); padding: 1.25rem; margin-top: 2rem;">
+          <div>
+            <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">الكمية ومواصفة الحاوية</span>
+            <strong style="font-family: var(--font-mono); font-size: 0.95rem;">{{ shipment.quantity }}</strong>
+          </div>
+          <div>
+            <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">تاريخ إنشاء الشحنة</span>
+            <strong style="font-family: var(--font-mono); font-size: 0.95rem;">{{ shipment.created_at|date:"Y-m-d H:i" }}</strong>
+          </div>
+          <div>
+            <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">آخر تحديث بياني</span>
+            <strong style="font-family: var(--font-mono); font-size: 0.95rem;">{{ shipment.updated_at|date:"Y-m-d H:i" }}</strong>
+          </div>
+          <div>
+            <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">حالة التوثيق الجمركي</span>
+            <strong style="color: var(--success);">نظام نافذة ACI معتمد</strong>
+          </div>
+        </div>
+
+        <!-- Operational Notes -->
+        {% if shipment.notes %}
+          <div style="margin-top: 1.5rem; background-color: #ffffff; border: 1px solid var(--border-light); padding: 1.25rem;">
+            <h4 style="font-size: 1rem; color: var(--navy-800); margin-bottom: 0.5rem; border-bottom: 1px solid var(--sand-200); padding-bottom: 0.35rem;">
+              تقرير المتابعة الميدانية وملاحظات الميناء:
+            </h4>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0; line-height: 1.7;">
+              {{ shipment.notes }}
+            </p>
+          </div>
+        {% endif %}
+
+        <div style="margin-top: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <a href="{% url 'contact' %}?ref={{ shipment.reference }}" class="btn btn-outline btn-sm">
+            استفسار عن مستندات هذه الشحنة
+          </a>
+          <span style="font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono);">
+            SECURE AUDIT TRACE IDENTIFIER: EGY-BL-{{ shipment.id }}
+          </span>
+        </div>
+      </div>
+    {% elif not_found %}
+      <div style="max-width: 600px; margin: 0 auto; text-align: center; padding: 2.5rem; background-color: #fff9f9; border: 1px solid #f3cbc8;">
+        <h3 style="color: var(--danger); margin-bottom: 0.5rem;">رقم البوليصة غير موجود بالسجل النشط</h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">
+          لم نعثر على شحنة تطابق الرقم "<strong dir="ltr">{{ ref }}</strong>". يرجى التأكد من كتابة الرقم بدقة أو مراجعة مسؤول العمليات التجارية.
+        </p>
+        <a href="{% url 'contact' %}" class="btn btn-secondary btn-sm" style="margin-top: 0.5rem;">التواصل مع غرفة العمليات اللوجستية</a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

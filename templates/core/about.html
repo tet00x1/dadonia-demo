@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}عن الشركة والموانئ اللوجستية - {{ COMPANY_NAME_AR }}{% endblock %}
+
+{% block content %}
+<section class="py-section bg-sand" style="border-bottom: 1px solid var(--border-light); padding: 2.5rem 0;">
+  <div class="container">
+    <span style="font-size: 0.85rem; font-weight: 700; color: var(--accent); text-transform: uppercase;">نبذة عن المؤسسة ومراكز العمليات</span>
+    <h1 style="font-size: 2.25rem; margin-top: 0.25rem; margin-bottom: 0.5rem;">شركة دادونيا للتجارة الدولية والنقل البحري</h1>
+    <p style="color: var(--text-muted); max-width: 850px; margin-bottom: 0;">
+      تأسست شركة دادونيا ككيان تجاري ولوجستي رائد يختص بتسويق وتصدير الحاصلات الزراعية والصناعية المصرية وإدارة سلاسل الإمداد المتكاملة عبر الموانئ البحرية الرئيسية.
+    </p>
+  </div>
+</section>
+
+<section class="py-section bg-white">
+  <div class="container">
+    <div class="editorial-grid" style="margin-bottom: 3.5rem;">
+      <div>
+        <h2 style="font-size: 1.65rem; margin-bottom: 1rem; border-bottom: 2px solid var(--navy-800); padding-bottom: 0.5rem;">
+          رؤيتنا ورسالتنا في التجارة الخارجية
+        </h2>
+        <p style="line-height: 1.8; color: var(--text-primary); font-size: 1rem;">
+          انطلاقاً من موقع مصر الجغرافي الاستراتيجي كملتقى للتجارة العالمية بين الشرق والغرب، تلتزم شركة دادونيا بتقديم نموذج تصديري عالي الكفاءة يضمن وصول المنتجات المصرية إلى المستوردين في أوروبا، الخليج العربي، آسيا، وأمريكا الشمالية بأعلى معايير النضارة والسلامة الغذائية.
+        </p>
+        <p style="line-height: 1.8; color: var(--text-muted); font-size: 0.95rem;">
+          تعتمد منظومتنا على الرقابة الصارمة في كل مرحلة من مراحل سلسلة الإمداد: بدءاً من الفرز والتدريج بالمحطات المركزية المعتمدة، التغليف وفق متطلبات المشتري، النقل في شاحنات مبردة، وحتى استكمال الفحص المعملي وإنهاء الإفراج الجمركي المسبق عبر منظومة "نافذة" المصرية.
+        </p>
+
+        <div style="background-color: var(--sand-50); border: 1px solid var(--border-light); padding: 1.25rem; margin-top: 1.5rem;">
+          <h4 style="color: var(--navy-800); margin-bottom: 0.5rem;">معايير السلامة والجودة المعتمدة:</h4>
+          <ul class="feature-list" style="font-size: 0.9rem;">
+            <li><span class="bullet-line">&#8212;</span> شهادة الممارسات الزراعية الجيدة العالمية (GlobalG.A.P).</li>
+            <li><span class="bullet-line">&#8212;</span> نظام إدارة سلامة الغذاء (ISO 22000:2018).</li>
+            <li><span class="bullet-line">&#8212;</span> الفحص المعتمد من الهيئة القومية لسلامة الغذاء المصرية (NFSA).</li>
+            <li><span class="bullet-line">&#8212;</span> شهادات خلو من متبقيات المبيدات والإشعاع صادرة من المعامل المركزية المعتمدة.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Real Photo Slots & Facility Showcase -->
+      <div>
+        <div style="border: 1px solid var(--border-light); background-color: var(--sand-100); padding: 1rem; margin-bottom: 1.5rem;">
+          <div style="height: 240px; border: 1px solid var(--border-light); overflow: hidden; margin-bottom: 0.75rem;">
+            <img src="{% static 'img/port-hub.svg' %}" alt="محطة الشحن البحري بميناء الإسكندرية">
+          </div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono); text-align: left;">
+            FACILITY 01: ALEXANDRIA PORT COMMERCIAL GATE [REAL PHOTO SLOT]
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.35rem; margin-bottom: 0;">
+            ساحة تجهيز وتفتيش الحاويات المبردة التابعة للشركة على رصيف محطة الإسكندرية لتداول الحاويات (ACCHCO).
+          </p>
+        </div>
+
+        <div style="border: 1px solid var(--border-light); background-color: var(--sand-100); padding: 1rem;">
+          <div style="height: 200px; border: 1px solid var(--border-light); overflow: hidden; margin-bottom: 0.75rem;">
+            <img src="{% static 'img/cold-warehouse.svg' %}" alt="مجمع محطات الفرز والتعبئة">
+          </div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono); text-align: left;">
+            FACILITY 02: REEFER PACKING STATION - SALHEYA [REAL PHOTO SLOT]
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.35rem; margin-bottom: 0;">
+            محطة الفرز الآلي وتعبئة الفراولة والخضروات المجمدة بنظام التبريد الفوري السريع.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seaport Logistics Hubs -->
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">الموانئ والمراكز اللوجستية التي نخدمها</h2>
+        <p class="section-subtitle">تواجد ميداني وتخليص جمركي مباشر عبر كافة المنافذ البحرية المصرية</p>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem;">
+      <div style="background-color: var(--sand-50); border: 1px solid var(--border-light); padding: 1.5rem;">
+        <h3 style="font-size: 1.2rem; color: var(--navy-800); margin-bottom: 0.5rem;">ميناء الإسكندرية والدخيلة</h3>
+        <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6;">
+          المركز الرئيسي لشحنات الموالح والحاصلات الزراعية المتجهة إلى موانئ البحر المتوسط وأوروبا الشمالية والاتحاد الروسي.
+        </p>
+        <span style="font-size: 0.75rem; color: var(--accent); font-weight: 700; font-family: var(--font-mono);">TERMINAL: ACCHCO / TMT</span>
+      </div>
+
+      <div style="background-color: var(--sand-50); border: 1px solid var(--border-light); padding: 1.5rem;">
+        <h3 style="font-size: 1.2rem; color: var(--navy-800); margin-bottom: 0.5rem;">ميناء دمياط البحري</h3>
+        <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6;">
+          محطة استراتيجية لشحن البصل، الخضروات، والأسمدة الصناعية ومواد البناء، مجهزة بأحدث خطوط الملاحة السريعة.
+        </p>
+        <span style="font-size: 0.75rem; color: var(--accent); font-weight: 700; font-family: var(--font-mono);">TERMINAL: DCHC / ALIANCA</span>
+      </div>
+
+      <div style="background-color: var(--sand-50); border: 1px solid var(--border-light); padding: 1.5rem;">
+        <h3 style="font-size: 1.2rem; color: var(--navy-800); margin-bottom: 0.5rem;">ميناء العين السخنة والأدبية</h3>
+        <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6;">
+          بوابة التصدير المباشر على البحر الأحمر المتجهة إلى أسواق دول الخليج العربي، شرق أفريقيا، وشبه القارة الهندية.
+        </p>
+        <span style="font-size: 0.75rem; color: var(--accent); font-weight: 700; font-family: var(--font-mono);">TERMINAL: DP WORLD SOKHNA</span>
+      </div>
+
+      <div style="background-color: var(--sand-50); border: 1px solid var(--border-light); padding: 1.5rem;">
+        <h3 style="font-size: 1.2rem; color: var(--navy-800); margin-bottom: 0.5rem;">ميناء شرق وغرب بورسعيد</h3>
+        <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6;">
+          نقطة الترانزيت المحورية على مدخل قناة السويس لخدمة سفن الحاويات العملاقة والربط العالمي المباشر.
+        </p>
+        <span style="font-size: 0.75rem; color: var(--accent); font-weight: 700; font-family: var(--font-mono);">TERMINAL: SCCT / APM TERMINALS</span>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

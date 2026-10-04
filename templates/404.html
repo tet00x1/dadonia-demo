@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}الصفحة غير موجودة (404) - {{ COMPANY_NAME_AR }}{% endblock %}
+
+{% block content %}
+<section class="py-section bg-sand" style="min-height: 50vh; display: flex; align-items: center;">
+  <div class="container" style="text-align: center; max-width: 650px;">
+    <span style="font-family: var(--font-mono); font-size: 4rem; font-weight: 800; color: var(--navy-800); line-height: 1;">
+      404
+    </span>
+    <h1 style="font-size: 1.75rem; margin: 1rem 0 0.5rem;">عفواً، الصفحة المطلوبة غير متاحة</h1>
+    <p style="color: var(--text-muted); margin-bottom: 2rem; line-height: 1.7;">
+      ربما تم نقل هذا المسار أو أن رقم المعاملة المدخل غير صحيح. يمكنك العودة إلى الصفحة الرئيسية أو استخدام قائمة المنتجات والتتبع.
+    </p>
+    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+      <a href="{% url 'home' %}" class="btn btn-primary">العودة للرئيسية ←</a>
+      <a href="{% url 'track' %}" class="btn btn-outline">تتبع شحنة بوليصة</a>
+    </div>
+  </div>
+</section>
+{% endblock %}
